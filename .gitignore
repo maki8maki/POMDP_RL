@@ -1,2 +1,13 @@
 # for virtual environment
 venv
+
+# for params
+config/*.yaml
+config/*/*.yaml
+!config/**/defaults.yaml
+
+# for logs
+logs
+
+# for pycache
+*.pyc

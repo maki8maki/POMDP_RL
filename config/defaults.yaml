@@ -1,0 +1,13 @@
+defaults:
+  - _env: defaults
+  - _model: defaults
+  - _self_
+
+hydra:
+  run:
+    dir: logs/defaults/${now:%Y%m%d-%H%M}
+
+seed: 42
+learn_kwargs:
+  total_timesteps: 10000
+  progress_bar: True
