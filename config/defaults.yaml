@@ -9,5 +9,5 @@ hydra:
 
 seed: 42
 learn_kwargs:
-  total_timesteps: 10000
+  total_timesteps: 50000
   progress_bar: True

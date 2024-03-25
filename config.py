@@ -1,4 +1,3 @@
-from copy import deepcopy
 import dacite
 import dataclasses
 import gymnasium as gym
@@ -8,7 +7,7 @@ from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 
-from utils import set_seed, make_env
+from utils import make_env
 
 @dataclasses.dataclass
 class Config:
@@ -20,12 +19,11 @@ class Config:
     learn_kwargs: dict = dataclasses.field(default_factory=dict)
 
     def __post_init__(self, _env, _model, seed):
-        if seed is not None:
-            set_seed(seed)
         self.env = make_env(**_env)
         self.model: BaseAlgorithm = hydra.utils.instantiate(
             _model,
             env=self.env,
+            seed=seed,
             tensorboard_log=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
         )
         eval_env = Monitor(make_env(**_env))
@@ -33,7 +31,8 @@ class Config:
             eval_env=eval_env,
             best_model_save_path=self.model.tensorboard_log,
             eval_freq=self.learn_kwargs['total_timesteps']/100,
-            verbose=0)
+            verbose=0
+        )
     
     @classmethod
     def convert(cls, _cfg: OmegaConf):

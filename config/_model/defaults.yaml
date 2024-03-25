@@ -1,3 +1,2 @@
 _target_: stable_baselines3.SAC
 policy: MlpPolicy
-seed: 42
