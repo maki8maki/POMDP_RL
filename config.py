@@ -28,7 +28,7 @@ class Config:
             env=self.env,
             tensorboard_log=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
         )
-        eval_env = Monitor(deepcopy(self.env))
+        eval_env = Monitor(make_env(**_env))
         self.learn_kwargs['callback'] = EvalCallback(
             eval_env=eval_env,
             best_model_save_path=self.model.tensorboard_log,

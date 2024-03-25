@@ -1,12 +1,15 @@
 import gymnasium as gym
+import hydra
 from matplotlib import animation
 import matplotlib.pyplot as plt
 import numpy as np
 import random
 import torch as th
 
-def make_env(env_name, env_kwargs: dict = {}):
+def make_env(env_name, env_kwargs: dict = {}, wrappers: list = []):
     env = gym.make(env_name, **env_kwargs)
+    for wrapper in wrappers:
+        env = hydra.utils.instantiate(wrapper, env=env)
     return env
 
 def set_seed(seed):

@@ -8,3 +8,4 @@ hydra-core
 dacite
 omegaconf
 stable-baselines3[extra]
+opencv-python
