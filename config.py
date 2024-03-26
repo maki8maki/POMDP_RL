@@ -29,7 +29,6 @@ class Config:
         eval_env = Monitor(make_env(**_env))
         self.learn_kwargs['callback'] = EvalCallback(
             eval_env=eval_env,
-            best_model_save_path=self.model.tensorboard_log,
             eval_freq=self.learn_kwargs['total_timesteps']/100,
             verbose=0
         )
