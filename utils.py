@@ -1,7 +1,11 @@
+import random
 import gymnasium as gym
 import hydra
 from matplotlib import animation
 import matplotlib.pyplot as plt
+import numpy as np
+import torch as th
+from torch.utils.tensorboard import SummaryWriter
 
 def make_env(env_name, env_kwargs: dict = {}, wrappers: list = []):
     env = gym.make(env_name, **env_kwargs)
@@ -24,3 +28,32 @@ def anim(frames, titles=None, filename=None, show=True):
         anim.save(filename, writer="ffmpeg")
     if show:
         plt.show()
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    th.manual_seed(seed)
+    th.backends.cudnn.deterministic = True
+    th.backends.cudnn.benchmark = False
+    if th.cuda.is_available():
+        th.cuda.manual_seed(seed)
+        th.cuda.manual_seed_all(seed)
+
+class Trainer:
+    def __init__(self, env: gym.Env, tensorboard_log: str, seed = 0, num_steps = 3*10**6):
+        self.env = env
+        self.env.action_space.seed(seed)
+
+        self.tensorboard_log = tensorboard_log
+        self.writer = SummaryWriter(log_dir=tensorboard_log)
+
+        self.num_steps = num_steps
+    
+    def learn(self, eval_env: gym.Env, eval_interval = 10**4, num_eval_episodes=5):
+        return NotImplementedError
+    
+    def evaluate(self, eval_env: gym.Env, step: int, num_eval_episodes: int):
+        return NotImplementedError
+    
+    def save(self, save_dir):
+        return NotImplementedError

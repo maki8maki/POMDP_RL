@@ -1,11 +1,11 @@
 import gymnasium as gym
-from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from slac.algo import SlacAlgorithm
 from slac.utils import SlacObservation
+from utils import Trainer
 
-class Trainer:
+class SLACTrainer(Trainer):
     """
     Trainer for SLAC.
     """
@@ -21,24 +21,17 @@ class Trainer:
         initial_collection_steps = 10 ** 4,
         initial_learning_steps = 10 ** 5,
     ):
+        super().__init__(env, tensorboard_log, seed, num_steps)
+
         # Algorithm to learn.
         self.algo = SlacAlgorithm(env.observation_space.shape, env.action_space.shape, device, seed, **algo_kwargs)
-
-        # Env to collect samples.
-        self.env = env
-        self.env.action_space.seed(seed)
 
         # Observations for training and evaluation.
         num_sequences = self.algo.num_sequences
         self.ob = SlacObservation(env.observation_space.shape, env.action_space.shape, num_sequences)
         self.ob_test = SlacObservation(env.observation_space.shape, env.action_space.shape, num_sequences)
 
-        # Log setting.
-        self.tensorboard_log = tensorboard_log
-        self.writer = SummaryWriter(log_dir=tensorboard_log)
-
         # Other parameters.
-        self.num_steps = num_steps
         self.initial_collection_steps = initial_collection_steps
         self.initial_learning_steps = initial_learning_steps
         self.algo.learning_steps_sac = initial_collection_steps - 1
@@ -62,6 +55,8 @@ class Trainer:
             
             if step % eval_interval == 0:
                 self.evaluate(eval_env, step, num_eval_episodes)
+        self.writer.flush()
+        self.writer.close()
 
     def evaluate(self, eval_env: gym.Env, step, num_eval_episodes):
         mean_return = 0.0

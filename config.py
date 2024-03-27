@@ -8,8 +8,7 @@ from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 from typing import Union
 
-from utils import make_env
-from slac.trainer import Trainer
+from utils import make_env, set_seed, Trainer
 
 @dataclasses.dataclass
 class Config:
@@ -20,7 +19,7 @@ class Config:
     seed: dataclasses.InitVar[int] = None
     learn_kwargs: dict = dataclasses.field(default_factory=dict)
 
-    def __post_init__(self, _env, _model, seed):
+    def __post_init__(self, _env: dict, _model: dict, seed: int):
         self.env = make_env(**_env)
         self.model = hydra.utils.instantiate(
             _model,
@@ -36,6 +35,7 @@ class Config:
                 verbose=0
             )
         elif isinstance(self.model, Trainer):
+            set_seed(seed)
             eval_env = make_env(**_env)
             self.learn_kwargs.update({
                 'eval_env': eval_env,
