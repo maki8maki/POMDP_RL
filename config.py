@@ -31,7 +31,7 @@ class Config:
             eval_env = Monitor(make_env(**_env))
             self.learn_kwargs['callback'] = EvalCallback(
                 eval_env=eval_env,
-                eval_freq=self.learn_kwargs['total_timesteps']/100,
+                eval_freq=500,
                 verbose=0
             )
         elif isinstance(self.model, Trainer):
@@ -39,7 +39,7 @@ class Config:
             eval_env = make_env(**_env)
             self.learn_kwargs.update({
                 'eval_env': eval_env,
-                'eval_interval': self.model.num_steps / 100
+                'eval_interval': 500,
             })
     
     @classmethod
