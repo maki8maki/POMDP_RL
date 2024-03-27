@@ -39,6 +39,11 @@ def set_seed(seed):
         th.cuda.manual_seed(seed)
         th.cuda.manual_seed_all(seed)
 
+def unscale_action(action, action_space: gym.spaces.Box):
+    low = action_space.low
+    high = action_space.high
+    return low + (0.5 * (action + 1.0) * (high - low))
+
 class Trainer:
     def __init__(self, env: gym.Env, tensorboard_log: str, seed = 0, num_steps = 3*10**6):
         self.env = env

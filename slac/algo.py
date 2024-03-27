@@ -1,8 +1,6 @@
 import os
-import random
 
 import gymnasium as gym
-import numpy as np
 import torch as th
 from torch.optim import Adam
 from torch.utils.tensorboard import SummaryWriter
@@ -10,6 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 from slac.buffer import ReplayBuffer
 from slac.network import GaussianPolicy, LatentModel, TwinnedQNetwork
 from slac.utils import create_feature_actions, grad_false, soft_update, SlacObservation
+from utils import unscale_action
 
 
 class SlacAlgorithm:
@@ -24,7 +23,6 @@ class SlacAlgorithm:
         state_shape,
         action_shape,
         device,
-        seed,
         gamma=0.99,
         batch_size_sac=256,
         batch_size_latent=32,
@@ -38,12 +36,6 @@ class SlacAlgorithm:
         hidden_units=(256, 256),
         tau=5e-3,
     ):
-        random.seed(seed)
-        np.random.seed(seed)
-        th.manual_seed(seed)
-        th.cuda.manual_seed(seed)
-        self.seed = seed
-
         # Replay buffer.
         self.buffer = ReplayBuffer(buffer_size, num_sequences, state_shape, action_shape, device)
 
@@ -110,7 +102,7 @@ class SlacAlgorithm:
         else:
             action = self.explore(ob)
 
-        state, reward, terminated, truncated, _ = env.step(action)
+        state, reward, terminated, truncated, _ = env.step(unscale_action(action, env.action_space))
         done = terminated or truncated
         mask = False if truncated else done
         ob.append(state, action)

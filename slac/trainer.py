@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 from slac.algo import SlacAlgorithm
 from slac.utils import SlacObservation
-from utils import Trainer
+from utils import Trainer, unscale_action
 
 class SLACTrainer(Trainer):
     """
@@ -24,7 +24,7 @@ class SLACTrainer(Trainer):
         super().__init__(env, tensorboard_log, seed, num_steps)
 
         # Algorithm to learn.
-        self.algo = SlacAlgorithm(env.observation_space.shape, env.action_space.shape, device, seed, **algo_kwargs)
+        self.algo = SlacAlgorithm(env.observation_space.shape, env.action_space.shape, device, **algo_kwargs)
 
         # Observations for training and evaluation.
         num_sequences = self.algo.num_sequences
@@ -69,7 +69,7 @@ class SLACTrainer(Trainer):
 
             while not done:
                 action = self.algo.exploit(self.ob_test)
-                state, reward, terminated, truncated, _ = eval_env.step(action)
+                state, reward, terminated, truncated, _ = eval_env.step(unscale_action(action, eval_env.action_space))
                 done = terminated or truncated
                 self.ob_test.append(state, action)
                 episode_return += reward
