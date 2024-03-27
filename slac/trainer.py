@@ -13,7 +13,7 @@ class Trainer:
     def __init__(
         self,
         env: gym.Env,
-        tensorboard_log,
+        tensorboard_log: str,
         algo_kwargs : dict = {},
         device = 'cpu',
         seed = 0,
