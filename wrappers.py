@@ -14,7 +14,7 @@ class ImageObservation(gym.ObservationWrapper):
         image = self.observation(None)
         self.observation_space = gym.spaces.Box(low=0, high=255, shape=image.shape, dtype=np.uint8)
     
-    def observation(self, observation: Any) -> Any:
+    def observation(self, observation: Any) -> np.ndarray:
         return cv2.resize(self.env.render(), (self.width, self.height))
 
 class MultiGrayImageObservation(gym.Wrapper):
