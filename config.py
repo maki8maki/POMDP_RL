@@ -27,16 +27,16 @@ class Config:
             seed=seed,
             tensorboard_log=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
         )
+        eval_env = make_env(**_env)
         if isinstance(self.model, BaseAlgorithm):
-            eval_env = Monitor(make_env(**_env))
             self.learn_kwargs['callback'] = EvalCallback(
-                eval_env=eval_env,
+                eval_env=Monitor(eval_env),
                 eval_freq=500,
+                log_path=self.model.tensorboard_log,
                 verbose=0
             )
         elif isinstance(self.model, Trainer):
             set_seed(seed)
-            eval_env = make_env(**_env)
             self.learn_kwargs.update({
                 'eval_env': eval_env,
                 'eval_interval': 500,

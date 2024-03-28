@@ -18,7 +18,7 @@ class ImageObservation(gym.ObservationWrapper):
         return cv2.resize(self.env.render(), (self.width, self.height))
 
 class MultiGrayImageObservation(gym.Wrapper):
-    def __init__(self, env: gym.Env, width: int = 100, height: int = 100, num_stack: int = 4):
+    def __init__(self, env: gym.Env, width: int = 64, height: int = 64, num_stack: int = 4):
         super().__init__(env)
         self.env = ImageObservation(env=self.env, width=width, height=height)
         self.env = GrayScaleObservation(self.env)

@@ -30,14 +30,15 @@ def anim(frames, titles=None, filename=None, show=True):
         plt.show()
 
 def set_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    th.manual_seed(seed)
-    th.backends.cudnn.deterministic = True
-    th.backends.cudnn.benchmark = False
-    if th.cuda.is_available():
-        th.cuda.manual_seed(seed)
-        th.cuda.manual_seed_all(seed)
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+        th.manual_seed(seed)
+        th.backends.cudnn.deterministic = True
+        th.backends.cudnn.benchmark = False
+        if th.cuda.is_available():
+            th.cuda.manual_seed(seed)
+            th.cuda.manual_seed_all(seed)
 
 def unscale_action(action, action_space: gym.spaces.Box):
     low = action_space.low
