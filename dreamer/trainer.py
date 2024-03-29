@@ -2,6 +2,7 @@ import gymnasium as gym
 import numpy as np
 import os
 from tqdm import tqdm
+from typing import List
 
 from dreamer.buffer import ReplayBuffer
 from dreamer.core import Agent, Dreamer
@@ -73,21 +74,29 @@ class DreamerTrainer(Trainer):
         self.writer.flush()
         self.writer.close()
     
-    def evaluate(self, eval_env: gym.Env, step, num_eval_episodes=5):
+    def evaluate(self, eval_env: gym.Env, step: int, num_eval_episodes=5):
         self.dreamer.eval()
         policy = Agent(self.encoder, self.rssm, self.action_model)
-        total_reward = 0.0
+        results = []
         for _ in range(num_eval_episodes):
             obs, _ = eval_env.reset()
             done = False
+            total_reward = 0.0
             while not done:
                 action = policy(obs, training=False)
                 next_obs, reward, terminated, truncated, _ = eval_env.step(unscale_action(action, eval_env.action_space))
                 done = terminated or truncated
                 obs = next_obs
                 total_reward += reward
+            results.append(total_reward)
+        
+        self.timesteps.append(step)
+        self.episode_results.append(results)
+        log_path = os.path.join(self.tensorboard_log, 'evaluations')
+        np.savez(log_path, timesteps=self.timesteps, results=self.episode_results)
+
         self.dreamer.train()
-        self.writer.add_scalar("eval/mean_reward", total_reward / num_eval_episodes, step)
+        self.writer.add_scalar("eval/mean_reward", np.mean(results), step)
     
     def view(self):
         self.dreamer.eval()

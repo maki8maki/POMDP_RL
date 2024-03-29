@@ -1,5 +1,8 @@
 import gymnasium as gym
+import numpy as np
+import os
 from tqdm import tqdm
+from typing import List
 
 from slac.algo import SlacAlgorithm
 from slac.utils import SlacObservation
@@ -58,8 +61,8 @@ class SLACTrainer(Trainer):
         self.writer.flush()
         self.writer.close()
 
-    def evaluate(self, eval_env: gym.Env, step, num_eval_episodes):
-        mean_return = 0.0
+    def evaluate(self, eval_env: gym.Env, step: int, num_eval_episodes):
+        results = []
 
         for _ in range(num_eval_episodes):
             state, _ = eval_env.reset()
@@ -74,10 +77,15 @@ class SLACTrainer(Trainer):
                 self.ob_test.append(state, action)
                 episode_return += reward
 
-            mean_return += episode_return / num_eval_episodes
+            results.append(episode_return)
+        
+        self.timesteps.append(step)
+        self.episode_results.append(results)
+        log_path = os.path.join(self.tensorboard_log, 'evaluations')
+        np.savez(log_path, timesteps=self.timesteps, results=self.episode_results)
 
         # Log to TensorBoard.
-        self.writer.add_scalar("eval/mean_reward", mean_return, step)
+        self.writer.add_scalar("eval/mean_reward", np.mean(results), step)
     
     def save(self, save_dir):
         self.algo.save_model(save_dir)

@@ -1,4 +1,5 @@
 import random
+from typing import List
 import gymnasium as gym
 import hydra
 from matplotlib import animation
@@ -54,6 +55,9 @@ class Trainer:
         self.writer = SummaryWriter(log_dir=tensorboard_log)
 
         self.num_steps = num_steps
+
+        self.timesteps: List[int] = []
+        self.episode_results: List[List[float]] = []
     
     def learn(self, eval_env: gym.Env, eval_interval = 10**4, num_eval_episodes=5):
         return NotImplementedError
