@@ -8,7 +8,7 @@ from config import Config
 def main(_cfg: OmegaConf):
     cfg = Config.convert(_cfg)
     cfg.model.learn(**cfg.learn_kwargs)
-    cfg.model.save(os.path.join(cfg.model.tensorboard_log, 'model'))
+    cfg.model.save(os.path.join(cfg.model.tensorboard_log, 'model'))    
 
 if __name__ == '__main__':
     main()

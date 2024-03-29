@@ -2,11 +2,10 @@ import gymnasium as gym
 import numpy as np
 import os
 from tqdm import tqdm
-from typing import List
 
 from slac.algo import SlacAlgorithm
 from slac.utils import SlacObservation
-from utils import Trainer, unscale_action
+from utils import Trainer, unscale_action, anim
 
 class SLACTrainer(Trainer):
     """
@@ -86,6 +85,29 @@ class SLACTrainer(Trainer):
 
         # Log to TensorBoard.
         self.writer.add_scalar("eval/mean_reward", np.mean(results), step)
+
+    def view(self):
+        state, _ = self.env.reset()
+        self.ob_test.reset_episode(state)
+        frames = [self.env.render()]
+        step = 0
+        titles = [f'Step {step}']
+        episode_return = 0.0
+        done = False
+        while not done:
+            step += 1
+            action = self.algo.exploit(self.ob_test)
+            state, reward, terminated, truncated, _ = self.env.step(unscale_action(action, self.env.action_space))
+            done = terminated or truncated
+            self.ob_test.append(state, action)
+            episode_return += reward
+            frames.append(self.env.render())
+            titles.append(f'Step {step}')
+        print(episode_return)
+        anim(frames=frames, titles=titles, filename='logs/slac.gif', show=False)
     
     def save(self, save_dir):
         self.algo.save_model(save_dir)
+
+    def load(self, path):
+        self.algo.load_model(path)

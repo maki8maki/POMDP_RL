@@ -201,3 +201,9 @@ class SlacAlgorithm:
         th.save(self.latent.state_dict(), os.path.join(save_dir, "latent.pth"))
         th.save(self.actor.state_dict(), os.path.join(save_dir, "actor.pth"))
         th.save(self.critic.state_dict(), os.path.join(save_dir, "critic.pth"))
+    
+    def load_model(self, dir):
+        self.latent.encoder.load_state_dict(th.load(os.path.join(dir, 'encoder.pth')))
+        self.latent.load_state_dict(th.load(os.path.join(dir, 'latent.pth')))
+        self.actor.load_state_dict(th.load(os.path.join(dir, 'actor.pth')))
+        self.critic.load_state_dict(th.load(os.path.join(dir, 'critic.pth')))

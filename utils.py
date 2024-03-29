@@ -15,7 +15,7 @@ def make_env(env_name, env_kwargs: dict = {}, wrappers: list = []):
     return env
 
 def anim(frames, titles=None, filename=None, show=True):
-    plt.figure(figsize=(frames[0].shape[1], frames[0].shape[0]), dpi=144)
+    plt.figure(figsize=(frames[0].shape[1]/50, frames[0].shape[0]/50), dpi=100)
     patch = plt.imshow(frames[0])
     plt.axis('off')
 
@@ -66,4 +66,10 @@ class Trainer:
         return NotImplementedError
     
     def save(self, save_dir):
+        return NotImplementedError
+    
+    def view(self):
+        return NotImplementedError
+    
+    def load(self, path):
         return NotImplementedError

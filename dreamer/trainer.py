@@ -2,7 +2,6 @@ import gymnasium as gym
 import numpy as np
 import os
 from tqdm import tqdm
-from typing import List
 
 from dreamer.buffer import ReplayBuffer
 from dreamer.core import Agent, Dreamer
@@ -103,21 +102,21 @@ class DreamerTrainer(Trainer):
         policy = Agent(self.encoder, self.rssm, self.action_model)
         total_reward = 0.0
         obs, _ = self.env.reset()
-        frames = [obs]
+        frames = [self.env.render()]
         step = 0
         titles = [f'Step {step}']
         done = False
         while not done:
             step += 1
             action = policy(obs, training=False)
-            next_obs, reward, terminated, truncated, _ = self.env.step(unscale_action(action, self.env))
+            next_obs, reward, terminated, truncated, _ = self.env.step(unscale_action(action, self.env.action_space))
             done = terminated or truncated
             obs = next_obs
             total_reward += reward
-            frames.append(obs)
+            frames.append(self.env.render())
             titles.append(f'Step {step}')
         print(total_reward)
-        anim(frames=frames, titles=titles)
+        anim(frames=frames, titles=titles, filename='logs/dreamer.gif', show=False)
     
     def save(self, log_dir='logs', name='params.pth'):
         os.makedirs(log_dir, exist_ok=True)
@@ -125,3 +124,6 @@ class DreamerTrainer(Trainer):
     
     def close(self):
         self.env.close()
+    
+    def load(self, path):
+        self.dreamer.load(path)
