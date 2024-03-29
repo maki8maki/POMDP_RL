@@ -1,0 +1,5 @@
+_target_: dreamer.DreamerTrainer
+num_steps: 50000
+initial_collection_episodes: 5
+dreamer_config:
+    device: cuda

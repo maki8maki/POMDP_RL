@@ -4,7 +4,7 @@ venv
 # for params
 config/*.yaml
 config/*/*.yaml
-!config/**/defaults.yaml
+!config/**/defaults*.yaml
 
 # for logs
 logs

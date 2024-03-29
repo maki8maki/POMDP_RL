@@ -1,0 +1,13 @@
+defaults:
+  - _env: defaults_image
+  - _model: defaults_sac_image
+  - _self_
+
+hydra:
+  run:
+    dir: logs/sac_image/${now:%Y%m%d-%H%M}
+
+seed: 42
+learn_kwargs:
+  total_timesteps: 50000
+  progress_bar: True

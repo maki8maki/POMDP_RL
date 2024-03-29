@@ -1,0 +1,9 @@
+env_name: Pendulum-v1
+env_kwargs:
+  render_mode: rgb_array
+  g: 9.81
+wrappers:
+  - _target_: wrappers.MultiGrayImageObservation
+    width: 64
+    height: 64
+    num_stack: 1

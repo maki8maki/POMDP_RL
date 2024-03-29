@@ -1,0 +1,10 @@
+defaults:
+  - _env: defaults_image
+  - _model: defaults_slac
+  - _self_
+
+hydra:
+  run:
+    dir: logs/defaults_trainer/${now:%Y%m%d-%H%M}
+
+seed: 42

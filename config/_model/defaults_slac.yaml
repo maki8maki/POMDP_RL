@@ -1,0 +1,5 @@
+_target_: slac.SLACTrainer
+num_steps: 50000
+initial_collection_steps: 500
+initial_learning_steps: 5000
+device: cuda
